@@ -1,6 +1,7 @@
 import os
-import sys
 import random
+import sys
+
 import pygame
 
 size = width, height = 550, 550
@@ -70,6 +71,7 @@ class Box(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = Box.image
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         self.rect = self.image.get_rect().move(x, y)
@@ -83,16 +85,17 @@ class Fruit(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = Fruit.image
         self.rect = self.image.get_rect()
-        self.rect.x = random.randrange(500)
+        self.rect.x = random.randrange(1, 500)
         self.rect.y = 0
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
-        self.rect.y += 10
+        if not pygame.sprite.collide_mask(self, box):
+            self.rect.y += 5
+        else:
+            self.kill()
 
 
-player = None
-
-# группы спрайтов
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
@@ -121,8 +124,7 @@ while running:
             x -= 30
         if keys[pygame.K_RIGHT] and x < 550 - 200:
             x += 30
-    if c % 60 == 0:
-
+    if c % 30 == 0:
         fruit = Fruit(tiles_group)
     box = Box(all_sprites)
 

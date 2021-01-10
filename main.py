@@ -36,9 +36,9 @@ def start_screen():
                   "Падение ускоряется",
                   "3 ошибки - проигрыш"]
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('fon1.png'), (width, height))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 60)
+    font = pygame.font.Font(None, 45)
     text_coord = 50
     for line in intro_text:
         string_rendered = font.render(line, 2, pygame.Color('red'))
@@ -60,17 +60,16 @@ def start_screen():
         clock.tick(FPS)
 
 
-player_image = load_image('mar.png')
+class Box(pygame.sprite.Sprite):
+    image = load_image("platform.png")
+    image = pygame.transform.scale(image, (200, 120))
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Box.image
+        self.rect = self.image.get_rect()
 
-tile_width = tile_height = 50
-
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, a):
-        super().__init__(player_group, all_sprites)
-        self.image = player_image
-        self.rect = self.image.get_rect().move(
-            pos_x + 15, 5)
+    def update(self):
+        self.rect = self.image.get_rect().move(x, y)
 
 
 player = None
@@ -81,7 +80,8 @@ tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 
 pygame.init()
-
+x = 0
+y = 450
 pygame.key.set_repeat(200, 70)
 STEP = 50
 FPS = 50
@@ -90,18 +90,20 @@ clock = pygame.time.Clock()
 running = True
 start_screen()
 while running:
+
+    screen.fill(pygame.Color("white"))
+
+    all_sprites.draw(screen)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                player.rect.x -= STEP
-            if event.key == pygame.K_RIGHT:
-                player.rect.x += STEP
-
-    screen.fill(pygame.Color("black"))
-    tiles_group.draw(screen)
-    player_group.draw(screen)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and x > -45:
+            x -= 15
+        if keys[pygame.K_RIGHT] and x < 550 - 175:
+            x += 15
+    box = Box(all_sprites)
+    all_sprites.update()
     pygame.display.flip()
     clock.tick(FPS)
 

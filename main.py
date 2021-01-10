@@ -1,5 +1,7 @@
+import os
+import sys
+import random
 import pygame
-import os, sys
 
 size = width, height = 550, 550
 screen = pygame.display.set_mode(size)
@@ -61,8 +63,9 @@ def start_screen():
 
 
 class Box(pygame.sprite.Sprite):
-    image = load_image("platform.png")
+    image = load_image("kor.png")
     image = pygame.transform.scale(image, (200, 120))
+
     def __init__(self, group):
         super().__init__(group)
         self.image = Box.image
@@ -70,6 +73,21 @@ class Box(pygame.sprite.Sprite):
 
     def update(self):
         self.rect = self.image.get_rect().move(x, y)
+
+
+class Fruit(pygame.sprite.Sprite):
+    image = load_image("box.png")
+    image = pygame.transform.scale(image, (20, 20))
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Fruit.image
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randrange(500)
+        self.rect.y = 0
+
+    def update(self):
+        self.rect.y += 10
 
 
 player = None
@@ -85,24 +103,30 @@ y = 450
 pygame.key.set_repeat(200, 70)
 STEP = 50
 FPS = 50
-
+c = 0
 clock = pygame.time.Clock()
 running = True
 start_screen()
 while running:
 
     screen.fill(pygame.Color("white"))
-
+    c += 1
     all_sprites.draw(screen)
+    tiles_group.draw(screen)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and x > -45:
-            x -= 15
-        if keys[pygame.K_RIGHT] and x < 550 - 175:
-            x += 15
+        if keys[pygame.K_LEFT] and x > -10:
+            x -= 30
+        if keys[pygame.K_RIGHT] and x < 550 - 200:
+            x += 30
+    if c % 60 == 0:
+
+        fruit = Fruit(tiles_group)
     box = Box(all_sprites)
+
+    tiles_group.update()
     all_sprites.update()
     pygame.display.flip()
     clock.tick(FPS)

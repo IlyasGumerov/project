@@ -7,7 +7,8 @@ import pygame
 size = width, height = 550, 550
 screen = pygame.display.set_mode(size)
 screen.fill(pygame.Color("white"))
-
+HIT = 3
+SCKORE = 0
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -65,7 +66,7 @@ def start_screen():
 
 class Box(pygame.sprite.Sprite):
     image = load_image("kor.png")
-    image = pygame.transform.scale(image, (200, 120))
+    image = pygame.transform.scale(image, (135, 100))
 
     def __init__(self, group):
         super().__init__(group)
@@ -78,8 +79,8 @@ class Box(pygame.sprite.Sprite):
 
 
 class Fruit(pygame.sprite.Sprite):
-    image = load_image("box.png")
-    image = pygame.transform.scale(image, (20, 20))
+    image = load_image("fruit.png")
+    image = pygame.transform.scale(image, (25, 25))
 
     def __init__(self, group):
         super().__init__(group)
@@ -91,11 +92,20 @@ class Fruit(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
-        self.rect.y += 5
+        global HIT
+        global SCKORE
+        global speed
+        self.rect.y += 7
         if pygame.sprite.spritecollideany(self, all_sprites):
             self.kill()
+            SCKORE += 10
+
+
         if self.rect.y >= 550:
+            HIT -= 1
             self.kill()
+        # if HIT <= 0:
+        #     terminate()
 
 
 all_sprites = pygame.sprite.Group()
@@ -103,11 +113,13 @@ tiles_group = pygame.sprite.Group()
 
 pygame.init()
 x = 0
-y = 450
+y = 470
 pygame.key.set_repeat(200, 70)
 STEP = 50
 FPS = 50
+speed = 45
 c = 0
+
 clock = pygame.time.Clock()
 running = True
 start_screen()
@@ -121,13 +133,24 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and x > -10:
+        if keys[pygame.K_LEFT] and x > 0:
             x -= 30
-        if keys[pygame.K_RIGHT] and x < 550 - 200:
+        if keys[pygame.K_RIGHT] and x < 550 - 135:
             x += 30
+
     box = Box(all_sprites)
-    if c % 30 == 0:
+    if c % speed == 0:
         fruit = Fruit(tiles_group)
+
+    f1 = pygame.font.Font(None, 48)
+    text1 = f1.render('Жизней - ' + str(HIT), True,
+                      (200, 0, 90))
+    screen.blit(text1, (350, 0))
+    f2 = pygame.font.Font(None, 48)
+    text2 = f2.render('Счет - ' + str(SCKORE), True,
+                      (0, 150, 30))
+    screen.blit(text2, (350, 50))
+    print(speed)
 
     tiles_group.update()
     all_sprites.update()

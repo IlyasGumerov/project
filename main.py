@@ -10,6 +10,7 @@ screen.fill(pygame.Color("white"))
 HIT = 3
 SCKORE = 0
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
 
@@ -33,36 +34,62 @@ def terminate():
     sys.exit()
 
 
-def start_screen():
-    intro_text = ["       Лови фрукты",
-                  "       Правила игры",
-                  "Нужно ловить падающие фрукты",
-                  "Падение ускоряется",
-                  "3 ошибки - проигрыш"]
+class Menu():
+    bg_image = load_image('fon1.png')
+    bg = load_image('gameover.png')
 
-    fon = pygame.transform.scale(load_image('fon1.png'), (width, height))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 45)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 2, pygame.Color('red'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+    def __init__(self):
+        self.image = Menu.bg_image
+        self.image_end = Menu.bg
+        self.image = pygame.transform.scale(self.image, size)
+        self.image_end = pygame.transform.scale(self.bg, size)
+        self.buttons_sp = []
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
-        pygame.display.flip()
-        clock.tick(FPS)
+    # Метод для создания кнопок и отрисовка этих кнопок
+    def buttons(self, sc, rect):
+        rect_dr = pygame.draw.rect(sc, pygame.Color('red'),
+                               rect)
+        return rect_dr
 
+    # Метод для паузы
+    def pause(self, sc):
+        flag = True
+        intro_text = ["Меню", "", "",
+                      "Продолжить",
+                      "",
+                      'Главное меню',
+                      "",
+                      "Выход из игры"]
+
+        sc.blit(self.image, (0, 0))
+        font = pygame.font.Font(None, 40)
+        text_coord = 50
+        # Отрисовка кнопок
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('black'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.centerx = 550 // 2
+            text_coord += intro_rect.height
+            # Если текст кнопки не пустой, то с ней можно будет взаимодействовать
+            if line:
+                a = self.buttons(screen, intro_rect)
+                self.buttons_sp.append(a)
+            sc.blit(string_rendered, intro_rect)
+
+        while flag:
+            for i in pygame.event.get():
+                if i.type == pygame.QUIT:
+                    sys.exit()
+                elif i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
+                    flag = self.click_on_btn_pause(i.pos)
+                elif i.type == pygame.KEYDOWN:
+                    if i.key == pygame.K_ESCAPE:
+                        flag = False
+            pygame.display.flip()
+            clock.tick(FPS)
+        return False
 
 class Box(pygame.sprite.Sprite):
     image = load_image("kor.png")
@@ -100,7 +127,6 @@ class Fruit(pygame.sprite.Sprite):
             self.kill()
             SCKORE += 10
 
-
         if self.rect.y >= 550:
             HIT -= 1
             self.kill()
@@ -112,17 +138,20 @@ all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 
 pygame.init()
-x = 0
+x = 550 // 2
 y = 470
 pygame.key.set_repeat(200, 70)
 STEP = 50
 FPS = 50
-speed = 45
+speed = 30
 c = 0
-
+bg = load_image('fon.jpg')
+bg = pygame.transform.scale(bg, size)
+bg_rect = bg.get_rect()
 clock = pygame.time.Clock()
 running = True
-start_screen()
+menu = Menu()
+
 while running:
 
     screen.fill(pygame.Color("white"))

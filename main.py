@@ -38,25 +38,25 @@ def terminate():
 
 
 class Menu():
-    bg_image = load_image('fon1.png')
-    bg = load_image('gameover.png')
+    fon_image = load_image('fon1.png')
+    game_over_image = load_image('gameover.png')
 
     def __init__(self):
-        self.image = Menu.bg_image
-        self.image_end = Menu.bg
+        self.image = Menu.fon_image
+        self.game_over_image = Menu.game_over_image
+        self.knopka_sp = []
         self.image = pygame.transform.scale(self.image, size)
-        self.image_end = pygame.transform.scale(self.bg, size)
-        self.buttons_sp = []
+        self.game_over_image = pygame.transform.scale(self.game_over_image, size)
 
     # Метод для создания кнопок и отрисовка этих кнопок
-    def buttons(self, sc, rect):
+    def knopka(self, sc, rect):
         rect_dr = pygame.draw.rect(sc, pygame.Color('red'),
                                    rect)
         return rect_dr
 
     # Метод для паузы
-    def pause(self, sc):
-        flag = True
+    def pause_game(self, screen):
+        cheking = True
         intro_text = ["Меню", "", "",
                       "Продолжить",
                       "",
@@ -64,70 +64,72 @@ class Menu():
                       "",
                       "Выход из игры"]
 
-        sc.blit(self.image, (0, 0))
+        screen.blit(self.image, (0, 0))
         font = pygame.font.Font(None, 40)
-        text_coord = 50
+        coordin_text = 50
         # Отрисовка кнопок
         for line in intro_text:
             string_rendered = font.render(line, 1, pygame.Color('black'))
             intro_rect = string_rendered.get_rect()
-            text_coord += 10
-            intro_rect.top = text_coord
+            coordin_text += 10
+            intro_rect.top = coordin_text
             intro_rect.centerx = 550 // 2
-            text_coord += intro_rect.height
+            coordin_text += intro_rect.height
             # Если текст кнопки не пустой, то с ней можно будет взаимодействовать
             if line:
-                a = self.buttons(screen, intro_rect)
-                self.buttons_sp.append(a)
-            sc.blit(string_rendered, intro_rect)
+                a = self.knopka(screen, intro_rect)
+                self.knopka_sp.append(a)
+            screen.blit(string_rendered, intro_rect)
 
-        while flag:
+        while cheking:
             for i in pygame.event.get():
                 if i.type == pygame.QUIT:
                     sys.exit()
                 elif i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
-                    flag = self.click_on_btn_pause(i.pos)
+                    cheking = self.click_pause(i.pos)
                 elif i.type == pygame.KEYDOWN:
                     if i.key == pygame.K_ESCAPE:
-                        flag = False
+                        cheking = False
             pygame.display.flip()
             clock.tick(FPS)
         return False
 
-    def game_over_screen(self, sc):
+    def game_over_screen(self, screen):
         pygame.mouse.set_visible(True)
-        flag = True
-        intro_text = ['', 'Главное Меню', '', '', '', '', '', '', 'Выход из игры']
-        sc.blit(self.image_end, (0, 0))
+        cheking = True
+        intro_text = ['', 'Главное Меню', '', '', f'Счет - {SCKORE}', '', '', '', 'Выход из игры']
+        screen.blit(self.game_over_image, (0, 0))
         font = pygame.font.Font(None, 40)
-        text_coord = 50
+        coordin_text = 50
+
         # Отрисовка кнопок
         for line in intro_text:
             string_rendered = font.render(line, 1, pygame.Color('black'))
             intro_rect = string_rendered.get_rect()
-            text_coord += 10
-            intro_rect.top = text_coord
+            coordin_text += 10
+            intro_rect.top = coordin_text
             intro_rect.centerx = 550 // 2
-            text_coord += intro_rect.height
+            coordin_text += intro_rect.height
             # Если текст кнопки не пустой, то с ней можно будет взаимодействовать
             if line:
-                a = self.buttons(screen, intro_rect)
-                self.buttons_sp.append(a)
-            sc.blit(string_rendered, intro_rect)
+                a = self.knopka(screen, intro_rect)
+                self.knopka_sp.append(a)
+            screen.blit(string_rendered, intro_rect)
 
-        while flag:
-            for i in pygame.event.get():
-                if i.type == pygame.QUIT:
+        while cheking:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     sys.exit()
-                elif i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
-                    flag = self.click_on_btn_end(i.pos)
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    cheking = self.click_on_btn_end(event.pos)
             pygame.display.flip()
             clock.tick(FPS)
         return False
 
     def main_menu(self, screen):
         # Player().new_game()
-        flag = True
+
+        cheking = True
         intro_text = ["Правила игры", "", "", "",
                       "Начать игру",
                       "", '', '',
@@ -135,72 +137,72 @@ class Menu():
 
         screen.blit(self.image, (0, 0))
         font = pygame.font.Font(None, 40)
-        text_coord = 50
+        coordin_text = 50
         # Отрисовка кнопок
         for line in intro_text:
             string_rendered = font.render(line, 1, pygame.Color('black'))
             intro_rect = string_rendered.get_rect()
-            text_coord += 10
-            intro_rect.top = text_coord
+            coordin_text += 10
+            intro_rect.top = coordin_text
             intro_rect.centerx = 550 // 2
-            text_coord += intro_rect.height
+            coordin_text += intro_rect.height
             # Если текст кнопки не пустой, то с ней можно будет взаимодействовать
             if line:
-                new_btn = self.buttons(screen, intro_rect)
-                self.buttons_sp.append(new_btn)
+                new_btn = self.knopka(screen, intro_rect)
+                self.knopka_sp.append(new_btn)
             screen.blit(string_rendered, intro_rect)
 
-        while flag:
+        while cheking:
             for i in pygame.event.get():
                 if i.type == pygame.QUIT:
                     sys.exit()
                 elif i.type == pygame.MOUSEBUTTONDOWN and i.button == 1:
-                    flag = self.click_btn_menu(i.pos)
+                    cheking = self.click_btn_menu(i.pos)
                 elif i.type == pygame.KEYDOWN:
                     if i.key == pygame.K_ESCAPE:
-                        flag = False
+                        cheking = False
             pygame.display.flip()
             clock.tick(FPS)
         return False
 
-    def reaction_click(self, pos):
-        for btn in self.buttons_sp:
+    def reaction_but(self, pos):
+        for btn in self.knopka_sp:
             if btn.collidepoint(pos):
-                return self.buttons_sp.index(btn) + 1
+                return self.knopka_sp.index(btn) + 1
         return 0
 
-    def click_on_btn_pause(self, pos):
-        click_flag = self.reaction_click(pos)
-        if not click_flag or click_flag == 4:
+    def click_pause(self, pos):
+        click_cheking = self.reaction_but(pos)
+        if not click_cheking or click_cheking == 4:
             return True
         else:
-            if click_flag == 5:
+            if click_cheking == 5:
                 return False
-            elif click_flag == 6:
+            elif click_cheking == 6:
                 self.main_menu(screen)
 
                 return
-            elif click_flag == 7:
+            elif click_cheking == 7:
                 sys.exit()
 
     # Метод для рекции на нажатие кнопок в режиме меню
     def click_btn_menu(self, pos):
-        click_flag = self.reaction_click(pos)
-        if not click_flag:
+        click_cheking = self.reaction_but(pos)
+        if not click_cheking:
             return True
         else:
-            if click_flag == 1:
+            if click_cheking == 1:
                 self.show_rules(screen)
                 return
-            elif click_flag == 2:
+            elif click_cheking == 2:
                 pygame.mouse.set_visible(False)
                 return False
-            elif click_flag == 3:
+            elif click_cheking == 3:
                 sys.exit()
 
     # Отрисовываем правила игры
     def show_rules(self, screen):
-        flag = True
+        cheking = True
         intro_text = ["Вы отправились на ферму фруктов.",
                       "",
                       "Фрукты очень хрупкие",
@@ -215,22 +217,22 @@ class Menu():
 
         screen.blit(self.image, (0, 0))
         font = pygame.font.Font(None, 30)
-        text_coord = 50
+        coordin_text = 50
         # Отрисовка кнопок
         for line in intro_text:
             string_rendered = font.render(line, 1, pygame.Color('black'))
             intro_rect = string_rendered.get_rect()
-            text_coord += 10
-            intro_rect.top = text_coord
+            coordin_text += 10
+            intro_rect.top = coordin_text
             intro_rect.centerx = 550 // 2
-            text_coord += intro_rect.height
+            coordin_text += intro_rect.height
             # Если текст кнопки не пустой, то с ней можно будет взаимодействовать
             if line:
-                a = self.buttons(screen, intro_rect)
-                self.buttons_sp.append(a)
+                a = self.knopka(screen, intro_rect)
+                self.knopka_sp.append(a)
             screen.blit(string_rendered, intro_rect)
 
-        while flag:
+        while cheking:
             for i in pygame.event.get():
                 if i.type == pygame.QUIT:
                     sys.exit()
@@ -242,14 +244,14 @@ class Menu():
         return False
 
     def click_on_btn_end(self, pos):
-        click_flag = self.reaction_click(pos)
-        if not click_flag:
+        click_cheking = self.reaction_but(pos)
+        if not click_cheking:
             return True
         else:
-            if click_flag == 4:
+            if click_cheking == 4:
                 self.main_menu(screen)
                 return False
-            elif click_flag == 3:
+            elif click_cheking == 3:
                 sys.exit()
 
 
@@ -310,14 +312,14 @@ STEP = 50
 FPS = 50
 speed = 30
 c = 0
-bg = load_image('fon.jpg')
-bg = pygame.transform.scale(bg, size)
-bg_rect = bg.get_rect()
+fon_game = load_image('fon.jpg')
+fon_game = pygame.transform.scale(fon_game, size)
+fon_game_rect = fon_game.get_rect()
 clock = pygame.time.Clock()
 running = True
 menu = Menu()
 menu.main_menu(screen)
-pause = False
+pause_game = False
 while running:
 
     screen.fill(pygame.Color("white"))
@@ -334,10 +336,10 @@ while running:
             x += 30
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                if pause:
-                    pause = False
+                if pause_game:
+                    pause_game = False
                 else:
-                    pause = True
+                    pause_game = True
                     pygame.mouse.set_visible(True)
 
     box = Box(all_sprites)
@@ -354,11 +356,9 @@ while running:
     screen.blit(text2, (350, 50))
     if HIT <= 0:
         menu.game_over_screen(screen)
-    if pause:
-        pause = menu.pause(screen)
+    if pause_game:
+        pause_game = menu.pause_game(screen)
         pygame.mouse.set_visible(False)
-
-    # screen.blit(bg, bg_rect)
 
     tiles_group.update()
     all_sprites.update()
